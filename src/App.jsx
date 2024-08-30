@@ -9,16 +9,12 @@ import OAuthCallback from "./OAuthCallback";
 import LoginPage from "./LoginPage";
 
 function App() {
-  const isAuthenticated = !!localStorage.getItem("access_token");
 
   return (
     <Router>
       <Routes>
         <Route path="/oauth/callback" element={<OAuthCallback />} />
-        <Route
-          path="/home"
-          element={isAuthenticated ? <HomePage /> : <Navigate to="/" />}
-        />
+        <Route path="/home" element={<HomePage />} />
         <Route path="/" element={<LoginPage />} />
       </Routes>
     </Router>

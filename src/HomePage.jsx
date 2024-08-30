@@ -1,31 +1,38 @@
-import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useEffect } from "react";
 
 const HomePage = () => {
-  const [data, setData] = useState(null);
+  const navigate = useNavigate();
+  const isAuthenticated = !!localStorage.getItem("access_token");
+  console.log("isAuthenticated : ", isAuthenticated);
 
   useEffect(() => {
-    const accessToken = localStorage.getItem("access_token");
-    if (accessToken) {
-      axios
-        .get("http://127.0.0.1:9000/protected/resource", {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
-        .then((response) => {
-          setData(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching protected resource:", error);
-        });
+    if (!isAuthenticated) {
+      navigate("/");
     }
-  }, []);
+  }, [isAuthenticated, navigate]);
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        "http://127.0.0.1:9000/logout",
+        {},
+        { withCredentials: true }
+      );
+
+      localStorage.removeItem("access_token");
+
+      navigate("/");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
 
   return (
     <div>
       <h1>Home Page</h1>
-      {data ? <pre>{JSON.stringify(data, null, 2)}</pre> : <p>Loading...</p>}
+      <button onClick={handleLogout}>Logout</button>
     </div>
   );
 };

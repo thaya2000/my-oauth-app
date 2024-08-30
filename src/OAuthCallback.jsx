@@ -14,17 +14,26 @@ const OAuthCallback = () => {
         code: authorizationCode,
         redirect_uri: "http://127.0.0.1:5173/oauth/callback",
         grant_type: "authorization_code",
+        code_verifier:
+          "1QT1dVHhvjX_ZeE7EtzYWgyrX7J95GMyQ6zc5sD7rSNE3bPNj2WxSoNaq5FDjaplJ9c3hepPQeh048gx1rt09N_QbpjXlzRTMtD-IT01zpIzkD9chpfXTzohdZdIjQaD",
       });
+
+      console.log("Sending POST request to:", tokenUrl);
+      console.log("Request data:", data.toString());
 
       const response = await axios.post(tokenUrl, data.toString(), {
         headers: {
+          method: "POST",
           "Content-Type": "application/x-www-form-urlencoded",
           Authorization: "Basic " + btoa("oidc-client:secret"), // For 'client_secret_basic' method
         },
       });
 
+      console.log("Response received:", response);
+
       const { access_token } = response.data;
       localStorage.setItem("access_token", access_token);
+      console.log("Navigate to Home Page");
       navigate("/home");
     } catch (error) {
       console.error(
