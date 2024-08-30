@@ -21,8 +21,8 @@
 const LoginPage = () => {
   const handleLogin = async () => {
     const clientId = "oidc-client";
-    const redirectUri = "http://127.0.0.1:5173/oauth/callback";
-    const authorizationUrl = "http://127.0.0.1:9000/oauth2/authorize";
+    const redirectUri = "http://192.168.1.104:5173/oauth/callback";
+    const authorizationUrl = "http://192.168.1.104:9000/oauth2/authorize";
     const scope = "openid profile";
     const responseType = "code";
     const codeChallenge = "fxYbsvx2bLsPKdvQ0Bs_TP3ArP4UIu2qQENfOiejOQ4";
@@ -34,7 +34,7 @@ const LoginPage = () => {
 
   const handleGithubLogin = () => {
     const clientId = "Ov23lidmJ2Krbo4pQJ7N";
-    const redirectUri = "http://127.0.0.1:9000/login/oauth2/code/github";
+    const redirectUri = "http://192.168.1.104:9000/login/oauth2/code/github";
     const scope = "read:user";
     const githubAuthorizationUrl = "https://github.com/login/oauth/authorize";
     const responseType = "code";
