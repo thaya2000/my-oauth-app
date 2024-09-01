@@ -7,12 +7,16 @@ const OAuthCallback = () => {
 
   const exchangeAuthorizationCode = async (authorizationCode) => {
     try {
-      const tokenUrl = "http://192.168.1.104:9000/oauth2/token";
+      const tokenUrl = `http://${
+        import.meta.env.VITE_APP_IPADDRESS
+      }:9000/oauth2/token`;
       const data = new URLSearchParams({
         client_id: "oidc-client",
         client_secret: "secret",
         code: authorizationCode,
-        redirect_uri: "http://192.168.1.104:5173/oauth/callback",
+        redirect_uri: `http://${
+          import.meta.env.VITE_APP_IPADDRESS
+        }:5173/oauth/callback`,
         grant_type: "authorization_code",
         code_verifier:
           "1QT1dVHhvjX_ZeE7EtzYWgyrX7J95GMyQ6zc5sD7rSNE3bPNj2WxSoNaq5FDjaplJ9c3hepPQeh048gx1rt09N_QbpjXlzRTMtD-IT01zpIzkD9chpfXTzohdZdIjQaD",
@@ -29,7 +33,7 @@ const OAuthCallback = () => {
         },
       });
 
-      console.log("Response received:", response);
+      console.log("Response received:", response.data);
 
       const { access_token } = response.data;
       localStorage.setItem("access_token", access_token);

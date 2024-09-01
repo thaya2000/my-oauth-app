@@ -16,7 +16,7 @@ const HomePage = () => {
   const handleLogout = async () => {
     try {
       await axios.post(
-        "http://192.168.1.104:9000/logout",
+        `http://${import.meta.env.VITE_APP_IPADDRESS}:9000/logout`,
         {},
         { withCredentials: true }
       );
