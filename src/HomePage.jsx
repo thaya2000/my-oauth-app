@@ -1,15 +1,21 @@
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useEffect } from "react";
+import Cookies from "js-cookie";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const isAuthenticated = !!localStorage.getItem("access_token");
+
+  // Check if the access token exists in cookies
+  const isAuthenticated = !!Cookies.get("access_token");
+  console.log("access_token : ", Cookies.get("access_token"));
   console.log("isAuthenticated : ", isAuthenticated);
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/");
+    } else {
+      console.log("User is authenticated");
     }
   }, [isAuthenticated, navigate]);
 
@@ -21,7 +27,9 @@ const HomePage = () => {
         { withCredentials: true }
       );
 
-      localStorage.removeItem("access_token");
+      // Clear the cookies on the client side (just for visual confirmation, server should handle this)
+      Cookies.remove("access_token", { path: "/" });
+      Cookies.remove("refresh_token", { path: "/" });
 
       navigate("/");
     } catch (error) {

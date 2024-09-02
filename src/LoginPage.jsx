@@ -1,23 +1,3 @@
-// import crypto from "crypto";
-
-// const generateCodeVerifier = () => {
-//   const array = new Uint32Array(56 / 2);
-//   window.crypto.getRandomValues(array);
-//   return Array.from(array, (dec) => ("0" + dec.toString(16)).substr(-2)).join(
-//     ""
-//   );
-// };
-
-// const generateCodeChallenge = async (verifier) => {
-//   const encoder = new TextEncoder();
-//   const data = encoder.encode(verifier);
-//   const digest = await crypto.subtle.digest("SHA-256", data);
-//   return btoa(String.fromCharCode(...new Uint8Array(digest)))
-//     .replace(/\+/g, "-")
-//     .replace(/\//g, "_")
-//     .replace(/=+$/, "");
-// };
-
 const LoginPage = () => {
   const handleLogin = async () => {
     const clientId = "oidc-client";
@@ -36,21 +16,9 @@ const LoginPage = () => {
     window.location.href = authUrl;
   };
 
-  // const handleGithubLogin = () => {
-  //   const clientId = "Ov23lidmJ2Krbo4pQJ7N";
-  //   const redirectUri = "http://${import.meta.env.VITE_APP_IPADDRESS}:9000/login/oauth2/code/github";
-  //   const scope = "read:user";
-  //   const githubAuthorizationUrl = "https://github.com/login/oauth/authorize";
-  //   const responseType = "code";
-
-  //   const authUrl = `${githubAuthorizationUrl}?response_type=${responseType}&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
-  //   window.location.href = authUrl;
-  // };
-
   return (
     <div>
       <button onClick={handleLogin}>Login with OAuth2.0</button>
-      {/* <button onClick={handleGithubLogin}>Login with GitHub</button> */}
     </div>
   );
 };
