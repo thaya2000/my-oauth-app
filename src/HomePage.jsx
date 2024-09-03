@@ -22,10 +22,12 @@ const HomePage = () => {
   const handleLogout = async () => {
     try {
       await axios.post(
-        `http://${import.meta.env.VITE_APP_IPADDRESS}:9000/logout`,
+        `${import.meta.env.VITE_APP_SERVER_URL}/logout`,
         {},
         { withCredentials: true }
       );
+
+      console.log("Navigate to Login Page1");
 
       // Clear the cookies on the client side (just for visual confirmation, server should handle this)
       Cookies.remove("access_token", { path: "/" });
