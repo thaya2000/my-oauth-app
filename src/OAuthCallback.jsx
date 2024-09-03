@@ -24,7 +24,6 @@ const OAuthCallback = () => {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
             Authorization: "Basic " + btoa("oidc-client:secret"),
-            // "Access-Control-Allow-Origin": "*",
           },
         });
 
