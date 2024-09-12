@@ -1,17 +1,48 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
 
+// Modal Component
+const Modal = ({ message, onClose }) => {
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+      <div className="bg-white p-5 rounded-lg shadow-lg">
+        <h2 className="text-xl font-bold mb-4 text-black">Login Error</h2>
+        <p className="mb-4 text-black">{message}</p>
+        <button
+          onClick={onClose}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const handleLogout = async () => {
+  const clientId = `${import.meta.env.VITE_APP_CLIENT_ID}`;
+  const redirectUri = `${import.meta.env.VITE_APP_SERVER_URL}`;
+  const authorizationUrl = `${import.meta.env.VITE_APP_SERVER_URL}/logout`;
+  const logoutUrl = `${authorizationUrl}?post_logout_redirect_uri=${redirectUri}`;
+  console.log("logoutUrl : ", logoutUrl);
+  window.location.href = logoutUrl;
+  Cookies.remove("access_token", { path: "/" });
+  Cookies.remove("refresh_token", { path: "/" });
+};
+
 const OAuthCallback = () => {
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState(null); // To store error messages
+  const [showModal, setShowModal] = useState(false); // To control modal visibility
 
   const exchangeAuthorizationCode = async (authorizationCode) => {
     try {
       const tokenUrl = `${import.meta.env.VITE_APP_SERVER_URL}/oauth2/token`;
       const data = new URLSearchParams({
-        client_id: "oidc-client",
-        client_secret: "secret",
+        client_id: `${import.meta.env.VITE_APP_CLIENT_ID}`,
+        client_secret: `${import.meta.env.VITE_APP_CLIENT_SECRET}`,
         code: authorizationCode,
         redirect_uri: `${import.meta.env.VITE_APP_CLIENT_URL}/oauth/callback`,
         grant_type: "authorization_code",
@@ -23,51 +54,75 @@ const OAuthCallback = () => {
         const response = await axios.post(tokenUrl, data.toString(), {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-            Authorization: "Basic " + btoa("oidc-client:secret"),
+            Authorization:
+              "Basic " +
+              btoa(
+                `${import.meta.env.VITE_APP_CLIENT_ID}:${
+                  import.meta.env.VITE_APP_CLIENT_SECRET
+                }`
+              ),
           },
         });
 
-        console.log("Response from token endpoint:", response.data);
-
-        // document.cookie = `access_token=${response.data.access_token}`;
-        // document.cookie = `refresh_token=${response.data.refresh_token}; Secure; SameSite=Lax; path=/`;
-
         Cookies.set("access_token", response.data.access_token, {
-          sameSite: "Lax",
           path: "/",
         });
         Cookies.set("refresh_token", response.data.refresh_token, {
-          sameSite: "Lax",
           path: "/",
         });
 
-        console.log("Navigate to Home Page");
-        navigate("/home");
-        // Handle response
+        navigate("/home"); // Navigate to home page on success
       } catch (error) {
-        console.error("Failed to exchange authorization code:", error.message);
-        // Handle error response
+        setErrorMessage(
+          "Failed to exchange authorization code. Please try again."
+        );
+        setShowModal(true); // Show the modal with error message
+        console.error("Error exchanging authorization code:", error.message);
       }
     } catch (error) {
-      console.error(
-        "Failed to exchange authorization code:",
-        error.response?.data || error.message
+      setErrorMessage(
+        "Failed to exchange authorization code. Please try again."
       );
+      setShowModal(true); // Show the modal with error message
+      console.error("Error exchanging authorization code:", error.message);
     }
   };
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const authorizationCode = queryParams.get("code");
+    const error = queryParams.get("error");
+    const errorDescription = queryParams.get("error_description");
 
-    if (authorizationCode) {
+    if (error) {
+      setErrorMessage(
+        `Login failed: ${error || "An unexpected error occurred."}`
+      );
+      setShowModal(true); // Show modal on error
+    } else if (authorizationCode) {
       exchangeAuthorizationCode(authorizationCode);
     } else {
-      console.error("Authorization code not found.");
+      setErrorMessage(
+        "Authorization code not found. Please try logging in again."
+      );
+      setShowModal(true); // Show modal on missing authorization code
     }
-  }, []);
+  }, [navigate]);
 
-  return <div>Loading...</div>;
+  return (
+    <div className="flex justify-center items-center h-screen">
+      {showModal && (
+        <Modal
+          message={errorMessage}
+          onClose={() => {
+            setShowModal(false); // Close modal on "OK" button click
+            handleLogout();
+          }}
+        />
+      )}
+      {/* <div>Loading...</div> */}
+    </div>
+  );
 };
 
 export default OAuthCallback;

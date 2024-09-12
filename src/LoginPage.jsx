@@ -1,6 +1,6 @@
 const LoginPage = () => {
   const handleLogin = async () => {
-    const clientId = "oidc-client";
+    const clientId = `${import.meta.env.VITE_APP_CLIENT_ID}`;
     const redirectUri = `${import.meta.env.VITE_APP_CLIENT_URL}/oauth/callback`;
     const authorizationUrl = `${
       import.meta.env.VITE_APP_SERVER_URL

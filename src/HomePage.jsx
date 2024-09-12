@@ -20,23 +20,15 @@ const HomePage = () => {
   }, [isAuthenticated, navigate]);
 
   const handleLogout = async () => {
-    try {
-      await axios.post(
-        `${import.meta.env.VITE_APP_SERVER_URL}/logout`,
-        {},
-        { withCredentials: true }
-      );
+    const clientId = `${import.meta.env.VITE_APP_CLIENT_ID}`;
+    const redirectUri = `${import.meta.env.VITE_APP_SERVER_URL}`;
+    const authorizationUrl = `${import.meta.env.VITE_APP_SERVER_URL}/logout`;
+    const logoutUrl = `${authorizationUrl}?post_logout_redirect_uri=${redirectUri}`;
+    console.log("logoutUrl : ", logoutUrl);
+    window.location.href = logoutUrl;
 
-      console.log("Navigate to Login Page1");
-
-      // Clear the cookies on the client side (just for visual confirmation, server should handle this)
-      Cookies.remove("access_token", { path: "/" });
-      Cookies.remove("refresh_token", { path: "/" });
-
-      navigate("/");
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
+    Cookies.remove("access_token", { path: "/" });
+    Cookies.remove("refresh_token", { path: "/" });
   };
 
   return (
