@@ -117,6 +117,7 @@ const OAuthCallback = () => {
           onClose={() => {
             setShowModal(false); // Close modal on "OK" button click
             handleLogout();
+            // navigate("/");
           }}
         />
       )}
